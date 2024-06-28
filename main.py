@@ -31,10 +31,10 @@ def main(stdscr):
         
         line_y = (y // 2)
         for i, char in enumerate(word):
-            if i == len(word) // 2:
+            if i < len(word) // 2:
                 stdscr.addstr(line_y, x_position + i, char, curses.color_pair(1) | curses.A_BOLD)
             else:
-                stdscr.addstr(line_y, x_position + i, char, curses.A_BOLD)
+                stdscr.addstr(line_y, x_position + i, char)
 
         stdscr.refresh()
 
