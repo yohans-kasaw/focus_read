@@ -2,10 +2,11 @@ import curses
 import sys
 import subprocess
 from datetime import datetime
+import pyperclip
 
 def get_clipboard_text():
-    result = subprocess.run(['xclip', '-selection', 'clipboard', '-o'], stdout=subprocess.PIPE)
-    return result.stdout.decode('utf-8')
+    result = pyperclip.paste()
+    return result
 
 def main(stdscr):
     curses.curs_set(0)  # Hide the cursor
