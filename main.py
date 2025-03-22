@@ -1,64 +1,126 @@
-import curses
-import sys
-import subprocess
-from datetime import datetime
+from textual.app import App, ComposeResult
+from textual.containers import Container, Horizontal, Vertical
+from textual.widgets import Static 
+from textual.binding import Binding
+from textual.reactive import reactive
 import pyperclip
+import json
+import os
 
-def get_clipboard_text():
-    result = pyperclip.paste()
-    return result
-
-def main(stdscr):
-    curses.curs_set(0)  # Hide the cursor
-    stdscr.nodelay(1)   # Non-blocking input
-    stdscr.timeout(100) # Refresh every 100 milliseconds
-
-    # Initialize color pair for green text
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-
-    text = get_clipboard_text().split()
-    if not text:
-        return
-
-    idx = 0
-    y, x = stdscr.getmaxyx()
-    x_center = x // 2
-
-    while idx < len(text):
-        stdscr.clear()
-        word = text[idx]
-        x_position = x_center - (len(word) // 2)
+class WordDisplay(Static):
+    """A widget to display the current word with enhanced formatting."""
+    
+    DEFAULT_CSS = """
+    WordDisplay {
+        width: 100%;
+        content-align: center middle;
+    }
+    
+    #current-word {
+        text-align: center;
+    }
+    """
+    
+    def __init__(self, word: str = "", *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.word = word
         
-        line_y = (y // 2)
-        for i, char in enumerate(word):
-            if i < len(word) // 2:
-                stdscr.addstr(line_y, x_position + i, char, curses.color_pair(1) | curses.A_BOLD)
-            else:
-                stdscr.addstr(line_y, x_position + i, char)
+    def compose(self) -> ComposeResult:
+        yield Static(self.word, id="current-word")
 
-        stdscr.refresh()
+    def update_word(self, word: str) -> None:
+        """Update the displayed word."""
+        self.word = word
+        current_word_widget = self.query_one("#current-word", Static)
+        current_word_widget.update(self.word)
 
-        key = stdscr.getch()
-        if key == curses.KEY_LEFT and idx > 0:
-            idx -= 1
-        elif key == curses.KEY_RIGHT:
-            if idx == len(text) - 1:
-                break
-            idx += 1
-        elif key == ord('q'):
-            break
+class Stats(Static):
+    """Display reading statistics."""
+    
+    def compose(self) -> ComposeResult:
+        yield Static("", id="stats-display")
+    def update_stats(self, current: int, total: int) -> None:
+        """Update the statistics display."""
+        progress = (current / total) * 100 if total > 0 else 0
+        stats = f"Progress: ({progress:.1f}%)"
+        stats_widget = self.query_one("#stats-display", Static)
+        stats_widget.update(stats)
 
-    save_text_to_file(text)
-    sys.exit()
+class FocusReadApp(App):
+    """A modern, feature-rich speed reading application."""
+    
+    BINDINGS = [
+        Binding("left", "prev_word", "Previous"),
+        Binding("right", "next_word", "Next"),
+        Binding("q", "quit", "Quit"),
+    ]
+    
+    current_index = reactive(0)
+    words = reactive([])
+    
+    def __init__(self):
+        super().__init__()
+        self.word_display = WordDisplay()
+        self.stats = Stats()
+        
+    DEFAULT_CSS = """
+    #main-container {
+        height: 100%;
+        align: center middle;
+    }
+    """
 
-def save_text_to_file(text):
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    first_few_words = "_".join(text[:5])
-    filename = f"text_{current_time}_{first_few_words}.txt"
-    with open(filename, 'w') as file:
-        file.write(" ".join(text))
-    print(f"Text saved to {filename}")
-
+    def compose(self) -> ComposeResult:
+        """Create child widgets for the app."""
+        yield Container(
+            Vertical(
+                self.stats,
+                self.word_display,
+                id="main-container"
+            )
+        )
+        
+    def on_mount(self) -> None:
+        """Initialization after mounting."""
+        self.load_clipboard_text()
+        self.update_display()
+        
+    def load_clipboard_text(self) -> None:
+        """Load text from clipboard."""
+        text = pyperclip.paste()
+        ## if text is empty line with no charactors
+        if text.strip() == "":
+            text = "No text found in clipboard"
+        self.words = [word for word in text.split() if word.strip()]
+        self.current_index = 0
+        
+    def update_display(self) -> None:
+        """Update the display with current word and statistics."""
+        if not self.words:
+            return
+            
+        word = self.words[self.current_index]
+        # Enhanced word display with ORP (Optimal Recognition Point)
+        orp_index = len(word) // 3
+        formatted_word = f"[green red]{word[:orp_index]}[/][dim]{word[orp_index:]}[/]"
+        self.word_display.update_word(formatted_word)
+        
+        # Update progress bar and stats
+        progress = (self.current_index / len(self.words)) * 100
+        self.stats.update_stats(self.current_index + 1, len(self.words))
+        
+    def action_next_word(self) -> None:
+        """Move to the next word."""
+        if self.current_index < len(self.words) - 1:
+            self.current_index += 1
+            self.update_display()
+            
+    def action_prev_word(self) -> None:
+        """Move to the previous word."""
+        if self.current_index > 0:
+            self.current_index -= 1
+            self.update_display()
+            
 if __name__ == "__main__":
-    curses.wrapper(main)
+    app = FocusReadApp()
+    app.run()
