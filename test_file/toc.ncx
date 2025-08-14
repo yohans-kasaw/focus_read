@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="eng">
+  <head>
+    <meta content="09ce60a7-c0ff-4099-8051-a132feadbd32" name="dtb:uid"/>
+    <meta content="3" name="dtb:depth"/>
+    <meta content="calibre (3.25.0)" name="dtb:generator"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
+  <docTitle>
+    <text>Gut: The Inside Story of Our Body's Most Underrated Organ (Revised Edition)</text>
+  </docTitle>
+  <navMap>
+    <navPoint class="chapter" id="num_1" playOrder="0">
+      <navLabel>
+        <text>Title Page</text>
+      </navLabel>
+      <content src="text/part0001.html#UGI0-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_2" playOrder="1">
+      <navLabel>
+        <text>Dedication</text>
+      </navLabel>
+      <content src="text/part0002.html#1T140-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_3" playOrder="2">
+      <navLabel>
+        <text>Contents</text>
+      </navLabel>
+      <content src="text/part0003.html#2RHM0-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_4" playOrder="3">
+      <navLabel>
+        <text>Preface</text>
+      </navLabel>
+      <content src="text/part0004.html#3Q280-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_5" playOrder="4">
+      <navLabel>
+        <text>1. Gut Feeling</text>
+      </navLabel>
+      <content src="text/part0005_split_000.html#4OIQ0-f933e90fdfeb41e083da38130973699b"/>
+      <navPoint class="chapter" id="num_6" playOrder="5">
+        <navLabel>
+          <text>How Does Pooping Work? And Why That’s an Important Question</text>
+        </navLabel>
+        <content src="text/part0006.html#5N3C0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_7" playOrder="6">
+        <navLabel>
+          <text>The Gateway to the Gut</text>
+        </navLabel>
+        <content src="text/part0007.html#6LJU0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_8" playOrder="7">
+        <navLabel>
+          <text>The Structure of the Gut</text>
+        </navLabel>
+        <content src="text/part0008.html#7K4G0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_9" playOrder="8">
+        <navLabel>
+          <text>What We Really Eat</text>
+        </navLabel>
+        <content src="text/part0009.html#8IL20-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_10" playOrder="9">
+        <navLabel>
+          <text>Allergies and Intolerances</text>
+        </navLabel>
+        <content src="text/part0010.html#9H5K0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_11" playOrder="10">
+        <navLabel>
+          <text>A Few Facts About Feces</text>
+        </navLabel>
+        <content src="text/part0011_split_000.html#AFM60-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+    </navPoint>
+    <navPoint class="chapter" id="num_12" playOrder="11">
+      <navLabel>
+        <text>2. The Nervous System of the Gut</text>
+      </navLabel>
+      <content src="text/part0012_split_000.html#BE6O0-f933e90fdfeb41e083da38130973699b"/>
+      <navPoint class="chapter" id="num_13" playOrder="12">
+        <navLabel>
+          <text>How Our Organs Transport Food</text>
+        </navLabel>
+        <content src="text/part0013.html#CCNA0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_14" playOrder="13">
+        <navLabel>
+          <text>Reflux</text>
+        </navLabel>
+        <content src="text/part0014.html#DB7S0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_15" playOrder="14">
+        <navLabel>
+          <text>Vomiting</text>
+        </navLabel>
+        <content src="text/part0015.html#E9OE0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_16" playOrder="15">
+        <navLabel>
+          <text>Constipation</text>
+        </navLabel>
+        <content src="text/part0016.html#F8900-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_17" playOrder="16">
+        <navLabel>
+          <text>The Brain and the Gut</text>
+        </navLabel>
+        <content src="text/part0017.html#G6PI0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+    </navPoint>
+    <navPoint class="chapter" id="num_18" playOrder="17">
+      <navLabel>
+        <text>3. The World of Microbes</text>
+      </navLabel>
+      <content src="text/part0018_split_000.html#H5A40-f933e90fdfeb41e083da38130973699b"/>
+      <navPoint class="chapter" id="num_19" playOrder="18">
+        <navLabel>
+          <text>I Am an Ecosystem</text>
+        </navLabel>
+        <content src="text/part0019.html#I3QM0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_20" playOrder="19">
+        <navLabel>
+          <text>The Immune System and Our Bacteria</text>
+        </navLabel>
+        <content src="text/part0020.html#J2B80-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_21" playOrder="20">
+        <navLabel>
+          <text>The Development of the Gut Flora</text>
+        </navLabel>
+        <content src="text/part0021.html#K0RQ0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_22" playOrder="21">
+        <navLabel>
+          <text>The Adult Gut Population</text>
+        </navLabel>
+        <content src="text/part0022.html#KVCC0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_23" playOrder="22">
+        <navLabel>
+          <text>The Role of the Gut Flora</text>
+        </navLabel>
+        <content src="text/part0023.html#LTSU0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_24" playOrder="23">
+        <navLabel>
+          <text>The Bad Guys—Harmful Bacteria and Parasites</text>
+        </navLabel>
+        <content src="text/part0024.html#MSDG0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_25" playOrder="24">
+        <navLabel>
+          <text>Of Cleanliness and Good Bacteria</text>
+        </navLabel>
+        <content src="text/part0025.html#NQU20-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+    </navPoint>
+    <navPoint class="chapter" id="num_26" playOrder="25">
+      <navLabel>
+        <text>4. Update on the Brain-Gut Connection</text>
+      </navLabel>
+      <content src="text/part0026_split_000.html#OPEK0-f933e90fdfeb41e083da38130973699b"/>
+      <navPoint class="chapter" id="num_27" playOrder="26">
+        <navLabel>
+          <text>New Discoveries</text>
+        </navLabel>
+        <content src="text/part0027.html#PNV60-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+      <navPoint class="chapter" id="num_28" playOrder="27">
+        <navLabel>
+          <text>Clever Cravings for Fermented Foods</text>
+        </navLabel>
+        <content src="text/part0028.html#QMFO0-f933e90fdfeb41e083da38130973699b"/>
+      </navPoint>
+    </navPoint>
+    <navPoint class="chapter" id="num_29" playOrder="28">
+      <navLabel>
+        <text>Acknowledgments</text>
+      </navLabel>
+      <content src="text/part0029.html#RL0A0-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_30" playOrder="29">
+      <navLabel>
+        <text>References</text>
+      </navLabel>
+      <content src="text/part0030.html#SJGS0-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_31" playOrder="30">
+      <navLabel>
+        <text>About the Author</text>
+      </navLabel>
+      <content src="text/part0031.html#TI1E0-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_32" playOrder="31">
+      <navLabel>
+        <text>Copyright Page</text>
+      </navLabel>
+      <content src="text/part0033.html#VF2I0-f933e90fdfeb41e083da38130973699b"/>
+    </navPoint>
+  </navMap>
+</ncx>

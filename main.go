@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	explearn "focusRead/exp_learn"
+)
 
 func main() {
-	fmt.Println("hello world")
+	explearn.Root_path()
 }
