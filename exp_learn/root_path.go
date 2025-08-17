@@ -4,57 +4,65 @@ import (
 	"archive/zip"
 	"encoding/xml"
 	"fmt"
-	"io"
+	"path"
 )
 
-const ContainerXMLFile = "META-INF/container.xml"
-
-type Container struct {
-	Rootfiles []struct {
-		FullPath string `xml:"full-path,attr"`
+type Epub struct {
+	Rootfile struct {
+		Path string `xml:"full-path,attr" json:"path"`
 	} `xml:"rootfiles>rootfile"`
+
+	FileMap map[string]*zip.File
 }
 
-func Root_path() {
-	// get absolute file path
-	abs_file_path := "/home/yohansh/focus_read/test_file/test.epub"
+type Opf struct {
+	Version string `xml:"version,attr"`
+}
 
-	r, error := zip.OpenReader(abs_file_path)
-	if error != nil {
-		fmt.Println(error)
+func readXml(file *zip.File, v any) error {
+	f_reader, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer f_reader.Close()
+
+	return xml.NewDecoder(f_reader).Decode(v)
+}
+
+func NewEpub(file_path string) (error, *Epub) {
+	r, err := zip.OpenReader(file_path)
+	if err != nil {
+		return err, nil
 	}
 	defer r.Close()
 
+
+
+	fileMap := make(map[string]*zip.File)
 	for _, file := range r.File {
-		if file.Name != ContainerXMLFile {
-			continue
-		}
-
-		f_reader, error := file.Open()
-
-		if error != nil {
-			fmt.Println(error)
-		}
-
-		xml_byte, error := io.ReadAll(f_reader)
-
-		if error != nil {
-			fmt.Println(error)
-		}
-
-		var container Container
-		err := xml.Unmarshal(xml_byte, &container)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Println(container.Rootfiles[0].FullPath)
-
+		fileMap[file.Name] = file
 	}
 
-	// unzip it
-	// extract and cache it
+	epub := Epub{
+		FileMap: fileMap,
+	}
 
-	// open the container.xml
-	// parse the xml
+	container_file := fileMap["META-INF/container.xml"]
+	readXml(container_file, &epub)
+
+	return nil, &epub
+}
+
+func Main_func() {
+	abs_file_path := "./test_file/test.epub"
+
+	err, epub := NewEpub(abs_file_path)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(epub.Rootfile.Path)
+	root_dir := path.Dir(epub.Rootfile.Path)
+	fmt.Println(root_dir)
 }
