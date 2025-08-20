@@ -2,20 +2,27 @@ package main
 
 import (
 	"fmt"
-	"path"
 	"focusRead/epub"
 )
 
 func main() {
-	abs_file_path := "./test_file/test.epub"
+	test("./test_file/test_v2.epub")
 
-	err, epub := epub.NewEpub(abs_file_path)
+}
+
+func test(file_name string){
+	fmt.Println("testing --> ", file_name)
+	fmt.Println("---------")
+
+	epub, err := epub.New(file_name)
 
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
-	fmt.Println(epub.Rootfile.Path)
-	root_dir := path.Dir(epub.Rootfile.Path)
-	fmt.Println(root_dir)
+	fmt.Println("result")
+	fmt.Println("---------")
+	fmt.Println("version: ",epub.Package.Version)
+	fmt.Println("Nav file: ", epub.Package.NavigationFile)
 }

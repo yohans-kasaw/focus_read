@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 )
 
-func readXml(file *zip.File, v any) error {
+func readXml(file *zip.File, v interface{}) error {
 	f_reader, err := file.Open()
 	if err != nil {
 		return err
