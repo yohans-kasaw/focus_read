@@ -5,6 +5,7 @@ import "archive/zip"
 type Epub struct {
 	ZipReader *zip.ReadCloser
 	FileMap   map[string]*zip.File
+	TextFiles []string
 
 	Container Container
 	Package   Package
@@ -29,4 +30,9 @@ type Package struct {
 			Properties string `xml:"properties"`
 		} `xml:"item"`
 	} `xml:"manifest"`
+	Spine struct {
+		Items []struct {
+			Idref string `xml:"idref,attr"`
+		} `xml:"itemref"`
+	} `xml:"spine"`
 }

@@ -26,4 +26,5 @@ func test(file_name string){
 	fmt.Println("version: ",epub.Package.Version)
 	fmt.Println("Nav file: ", epub.Package.NavigationFile)
 	fmt.Println("Title", epub.Package.Title)
+	fmt.Println("textFiles", epub.TextFiles[0])
 }

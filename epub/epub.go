@@ -3,6 +3,7 @@ package epub
 import (
 	"archive/zip"
 	"fmt"
+	"path"
 )
 
 func New(file_path string) (*Epub, error) {
@@ -28,6 +29,8 @@ func New(file_path string) (*Epub, error) {
 	if err = epub.parsePackage(); err != nil {
 		return nil, err
 	}
+
+	epub.constructTextFiles()
 
 	return &epub, nil
 }
@@ -67,4 +70,17 @@ func (e *Epub) parsePackage() error {
 	}
 
 	return nil
+}
+
+func (e *Epub) constructTextFiles() {
+
+	e.TextFiles = make([]string, 0)
+	for _, spine := range e.Package.Spine.Items {
+		for _, manifest := range e.Package.Manifest.Items {
+			if spine.Idref == manifest.Id {
+				full_path := path.Join(path.Dir(e.Container.Rootfile.Path), manifest.Href)
+				e.TextFiles = append(e.TextFiles, full_path)
+			}
+		}
+	}
 }
