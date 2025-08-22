@@ -18,7 +18,7 @@ type Container struct {
 
 type Package struct {
 	NavigationFile string
-	Title          string
+	Title          string `xml:"metadata>title"`
 	Version        string `xml:"version,attr"`
 	Manifest       struct {
 		Items []struct {
