@@ -30,6 +30,11 @@ func New(file_path string) (*Epub, error) {
 		return nil, err
 	}
 
+
+	if err = epub.parseToc(); err != nil {
+		return nil, err
+	}
+
 	epub.constructTextFiles()
 
 	return &epub, nil
@@ -50,7 +55,7 @@ func (e *Epub) parsePackage() error {
 		return fmt.Errorf("rootfile path not found in container.xml")
 	}
 
-	package_path, ok := e.FileMap[e.Container.Rootfile.Path]
+	package_file, ok := e.FileMap[e.Container.Rootfile.Path]
 	if !ok {
 		return fmt.Errorf(
 			"package file %s not found in EPUB",
@@ -58,7 +63,7 @@ func (e *Epub) parsePackage() error {
 		)
 	}
 
-	if err := readXml(package_path, &e.Package); err != nil {
+	if err := readXml(package_file, &e.Package); err != nil {
 		return err
 	}
 
@@ -83,4 +88,20 @@ func (e *Epub) constructTextFiles() {
 			}
 		}
 	}
+}
+
+func (e *Epub) parseToc() error {
+	if e.Package.NavigationFile == "" {
+		return fmt.Errorf("NavigationFile is null ")
+	}
+
+	nav_zip_file, ok := e.FileMap[e.Package.NavigationFile]
+	if !ok {
+		return fmt.Errorf(
+			"nav file %s not found in EPUB",
+			e.Container.Rootfile.Path,
+		)
+	}
+
+	return readXml(nav_zip_file, &e.Toc)
 }

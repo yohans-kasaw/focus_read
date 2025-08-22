@@ -9,6 +9,7 @@ type Epub struct {
 
 	Container Container
 	Package   Package
+	Toc       Toc
 }
 
 type Container struct {
@@ -35,4 +36,13 @@ type Package struct {
 			Idref string `xml:"idref,attr"`
 		} `xml:"itemref"`
 	} `xml:"spine"`
+}
+
+type Toc struct {
+	NavPoints []struct {
+		NavLabel string `xml:"navLabel>text"`
+		Content  struct {
+			Src string `xml:"src,attr"`
+		} `xml:"content"`
+	} `xml:"navMap>navPoint"`
 }

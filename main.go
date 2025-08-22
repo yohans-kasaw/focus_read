@@ -27,4 +27,5 @@ func test(file_name string){
 	fmt.Println("Nav file: ", epub.Package.NavigationFile)
 	fmt.Println("Title", epub.Package.Title)
 	fmt.Println("textFiles", epub.TextFiles[0])
+	fmt.Println("NavPoints epub 2", epub.Toc.NavPoints[1].NavLabel)
 }
