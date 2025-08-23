@@ -39,10 +39,15 @@ type Package struct {
 }
 
 type Toc struct {
-	NavPoints []struct {
-		NavLabel string `xml:"navLabel>text"`
-		Content  struct {
-			Src string `xml:"src,attr"`
-		} `xml:"content"`
-	} `xml:"navMap>navPoint"`
+	FlatNavPoints []NavPoint
+
+	NavPoints []NavPoint `xml:"navMap>navPoint"`
+}
+
+type NavPoint struct {
+	NavLabel string `xml:"navLabel>text"`
+	Content  struct {
+		Src string `xml:"src,attr"`
+	} `xml:"content"`
+	NavPoints []NavPoint `xml:"navPoint"`
 }

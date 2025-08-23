@@ -4,6 +4,9 @@ import (
 	"archive/zip"
 	"fmt"
 	"path"
+	"strings"
+
+	"golang.org/x/net/html"
 )
 
 func New(file_path string) (*Epub, error) {
@@ -11,7 +14,6 @@ func New(file_path string) (*Epub, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer r.Close()
 
 	epub := Epub{
 		ZipReader: r,
@@ -30,10 +32,11 @@ func New(file_path string) (*Epub, error) {
 		return nil, err
 	}
 
-
 	if err = epub.parseToc(); err != nil {
 		return nil, err
 	}
+
+	epub.parseFlatNavPoint(epub.Toc.NavPoints)
 
 	epub.constructTextFiles()
 
@@ -104,4 +107,53 @@ func (e *Epub) parseToc() error {
 	}
 
 	return readXml(nav_zip_file, &e.Toc)
+}
+
+func (e *Epub) parseFlatNavPoint(navPoints []NavPoint) {
+	if e.Toc.FlatNavPoints == nil {
+		e.Toc.FlatNavPoints = make([]NavPoint, 0)
+	}
+
+	for _, nv := range navPoints {
+		e.Toc.FlatNavPoints = append(e.Toc.FlatNavPoints, nv)
+		if len(nv.NavPoints) > 0 {
+			e.parseFlatNavPoint(nv.NavPoints)
+		}
+	}
+}
+
+func cli_show(file *zip.File) {
+	r, _ := file.Open()
+	z := html.NewTokenizer(r)
+	for {
+		token_type := z.Next()
+		if token_type == html.ErrorToken {
+			break
+		}
+
+		if token_type == html.TextToken {
+			text := z.Token().Data
+			text = strings.TrimSpace(text)
+			if text != "" {
+				fmt.Println(text)
+			}
+		}
+	}
+}
+
+func (e *Epub) HtmlLineByLine() {
+	for _, points := range e.Toc.FlatNavPoints[3:5] {
+		file, ok := e.FileMap[points.Content.Src]
+		if !ok {
+			fmt.Println("hurray not found")
+			fmt.Println("this file not found", points.NavLabel)
+		} else {
+			fmt.Println("---------------")
+			fmt.Println(points.NavLabel)
+			fmt.Println(points.Content.Src)
+			fmt.Println("---------------")
+			cli_show(file)
+		}
+
+	}
 }

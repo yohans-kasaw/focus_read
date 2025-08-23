@@ -2,6 +2,7 @@ module focusRead
 
 go 1.24.5
 
+<<<<<<< HEAD
 require (
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.6
@@ -29,3 +30,7 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
+||||||| parent of be0d72d (flat navigation file. html parsing)
+=======
+require golang.org/x/net v0.43.0
+>>>>>>> be0d72d (flat navigation file. html parsing)
