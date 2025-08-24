@@ -12,14 +12,19 @@ type model struct {
 	selected map[int]struct{}
 }
 
-func initialModel() model {
+func newModel() model {
 	return model{
-		choices:  []string{"item 1", "item 2"},
+		choices:  []string{"item 1", "item 2", "item 3"},
 		selected: make(map[int]struct{}),
 	}
 }
 
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -47,14 +52,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := "what would like to have? \n\n"
-	for i, c := range m.choices {
 
+	s := "selet what you want hommie \n\n"
+	for i, c := range m.choices {
 		cursor := " "
 		if i == m.cursor {
 			cursor = ">"
 		}
-
 		checked := " "
 		if _, ok := m.selected[i]; ok {
 			checked = "x"
@@ -66,13 +70,8 @@ func (m model) View() string {
 	return s
 }
 
-func (m model) Init() tea.Cmd {
-	return nil
-}
-
 func Test_Cli_Todo() {
-	p := tea.NewProgram(initialModel())
-
+	p := tea.NewProgram(newModel())
 	if _, err := p.Run(); err != nil {
 		panic(err)
 	}
