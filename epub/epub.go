@@ -2,23 +2,52 @@ package epub
 
 import (
 	"archive/zip"
+	"bytes"
+	"encoding/gob"
 	"fmt"
+	"os"
 	"path"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
+const cache_dir = "../cache"
+
 func New(file_path string) (*Epub, error) {
 	epub := Epub{
 		file_path: file_path,
 	}
 
-	epub.parseAndStore()
+	cache_path := path.Join(
+		cache_dir,
+		strings.ReplaceAll("/", "-", file_path),
+	)
+
+	if _, err := os.Stat(cache_path); err == nil {
+		file, err := os.Open(cache_path)
+		if err != nil {
+			panic(err)
+		}
+
+		defer file.Close()
+		decoder := gob.NewDecoder(file)
+		var restoredTexts []Text
+		err = decoder.Decode(&restoredTexts)
+		if err != nil {
+			panic (err)
+		}
+		fmt.Println("resored from cache")
+		epub.Texts = restoredTexts
+	} else {
+		epub.parse()
+		epub.cacheTexts(cache_path)
+	}
+
 	return &epub, nil
 }
 
-func(e *Epub) parseAndStore(){
+func (e *Epub) parse() {
 	r, err := zip.OpenReader(e.file_path)
 	if err != nil {
 		panic(err)
@@ -50,7 +79,35 @@ func(e *Epub) parseAndStore(){
 	e.parseEpubToTexts()
 }
 
-func(e *Epub) parseEpubToTexts(){
+func (e *Epub) cacheTexts(cache_path string) {
+	if len(e.Texts) == 0 {
+		fmt.Println("Texts is empty nothing to cache")
+		return
+	}
+
+	var buffer bytes.Buffer
+	encoder := gob.NewEncoder(&buffer)
+	err := encoder.Encode(e.Texts)
+	if err != nil {
+		fmt.Println("error caching", err)
+		return
+	}
+
+	file, err := os.Create(cache_path)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	_, err = file.Write(buffer.Bytes())
+	if err != nil {
+		fmt.Println("Error writing to file:", err)
+		return
+	}
+
+	fmt.Println("Successfully wrote gob data to product.gob")
+}
+
+func (e *Epub) parseEpubToTexts() {
 	arr := make([]Text, 0)
 
 	for _, points := range e.Toc.FlatNavPoints {
