@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -24,10 +25,11 @@ var spinners = []spinner.Spinner{
 }
 
 type smodel struct {
-	status  int
-	err     error
-	index   int
-	spinner spinner.Model
+	textInput textinput.Model
+	status    int
+	err       error
+	index     int
+	spinner   spinner.Model
 }
 
 type StatusCodeMsg int
@@ -50,7 +52,12 @@ func checkServer(url string) tea.Cmd {
 }
 
 func (m smodel) Init() tea.Cmd {
-	return checkServer(url)
+	return tea.Batch(
+		checkServer(url),
+		textinput.Blink,
+		m.spinner.Tick,
+	)
+
 }
 
 func (m smodel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -70,13 +77,15 @@ func (m smodel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.resetSpinner()
 			return m, nil
 		}
-	default:
+	case spinner.TickMsg:
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(m.spinner.Tick())
 		return m, cmd
 	}
 
-	return m, nil
+	var cmd tea.Cmd
+	m.textInput, cmd = m.textInput.Update(msg)
+	return m, cmd
 }
 
 func (m smodel) View() string {
@@ -86,6 +95,7 @@ func (m smodel) View() string {
 	}
 
 	s := fmt.Sprintf("checking ... %s ", url)
+	s += fmt.Sprintf(m.textInput.View())
 
 	if m.status > 0 {
 		s += fmt.Sprintf("%d %s!", m.status, http.StatusText(m.status))
@@ -93,17 +103,27 @@ func (m smodel) View() string {
 		s += fmt.Sprintf("  %s", m.spinner.View())
 	}
 
+	s += fmt.Sprintf("\n\n=n %s", m.textInput.Value())
+
 	return s
 }
 
-func (m *smodel) resetSpinner(){
+func (m *smodel) resetSpinner() {
 	m.spinner.Spinner = spinners[m.index]
 }
 
 func TestStatusCli() {
 	s := spinner.New()
 	s.Spinner = spinner.Line
-	if _, err := tea.NewProgram(smodel{spinner: s}).Run(); err != nil {
+	ti := textinput.New()
+	ti.Placeholder = "input url"
+	ti.Focus()
+	ti.Width = 40
+
+	if _, err := tea.NewProgram(smodel{
+		spinner:   s,
+		textInput: ti,
+	}).Run(); err != nil {
 		panic(err)
 	}
 }
