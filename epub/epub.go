@@ -12,19 +12,17 @@ import (
 	"golang.org/x/net/html"
 )
 
-const cache_dir = "../cache"
+const cache_dir = "./cache"
 
 func New(file_path string) (*Epub, error) {
 	epub := Epub{
 		file_path: file_path,
 	}
 
-	cache_path := path.Join(
-		cache_dir,
-		strings.ReplaceAll("/", "-", file_path),
-	)
+	_, file_name := path.Split(file_path)
+	cache_path := path.Join(cache_dir, file_name) + ".bin"
 
-	if _, err := os.Stat(cache_path); err == nil {
+	if ok, _ := os.Stat(cache_path); ok != nil {
 		file, err := os.Open(cache_path)
 		if err != nil {
 			panic(err)
@@ -35,11 +33,12 @@ func New(file_path string) (*Epub, error) {
 		var restoredTexts []Text
 		err = decoder.Decode(&restoredTexts)
 		if err != nil {
-			panic (err)
+			panic(err)
 		}
 		fmt.Println("resored from cache")
 		epub.Texts = restoredTexts
 	} else {
+		fmt.Println("just parsing instead")
 		epub.parse()
 		epub.cacheTexts(cache_path)
 	}
@@ -95,7 +94,8 @@ func (e *Epub) cacheTexts(cache_path string) {
 
 	file, err := os.Create(cache_path)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("error creating a file", err)
+		return
 	}
 
 	_, err = file.Write(buffer.Bytes())
@@ -200,7 +200,20 @@ func (e *Epub) parseFlatNavPoint(navPoints []NavPoint) {
 	}
 
 	for _, nv := range navPoints {
-		e.Toc.FlatNavPoints = append(e.Toc.FlatNavPoints, nv)
+
+		found := false
+		for _, existingNv := range e.Toc.FlatNavPoints {
+			if trimAfterHash(existingNv.Content.Src) == trimAfterHash(nv.Content.Src) {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			nv.Content.Src = trimAfterHash(nv.Content.Src)
+			e.Toc.FlatNavPoints = append(e.Toc.FlatNavPoints, nv)
+		}
+
 		if len(nv.NavPoints) > 0 {
 			e.parseFlatNavPoint(nv.NavPoints)
 		}
@@ -210,7 +223,7 @@ func (e *Epub) parseFlatNavPoint(navPoints []NavPoint) {
 func extract_and_add(node *html.Node, arr *[]Text) {
 	if node.Type == html.TextNode && node.Parent != nil {
 		text := strings.TrimSpace(node.Data)
-		if text != "" {
+		if text != "" && node.Parent.Data != "title" && node.Parent.Data != "head" {
 			var textType string
 			switch node.Parent.Data {
 			case "h1", "h2", "h3", "h4", "h5", "h6", "title":
@@ -227,4 +240,9 @@ func extract_and_add(node *html.Node, arr *[]Text) {
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
 		extract_and_add(c, arr)
 	}
+}
+
+func trimAfterHash(s string) string {
+	before, _, _ := strings.Cut(s, "#")
+	return before
 }
