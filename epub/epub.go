@@ -10,37 +10,65 @@ import (
 )
 
 func New(file_path string) (*Epub, error) {
-	r, err := zip.OpenReader(file_path)
-	if err != nil {
-		return nil, err
+	epub := Epub{
+		file_path: file_path,
 	}
 
-	epub := Epub{
-		ZipReader: r,
-		FileMap:   make(map[string]*zip.File),
+	epub.parseAndStore()
+	return &epub, nil
+}
+
+func(e *Epub) parseAndStore(){
+	r, err := zip.OpenReader(e.file_path)
+	if err != nil {
+		panic(err)
 	}
+
+	e.FileMap = make(map[string]*zip.File)
+	e.ZipReader = r
 
 	for _, file := range r.File {
-		epub.FileMap[file.Name] = file
+		e.FileMap[file.Name] = file
 	}
 
-	if err = epub.parseContainer(); err != nil {
-		return nil, err
+	if err := e.parseContainer(); err != nil {
+		panic(err)
 	}
 
-	if err = epub.parsePackage(); err != nil {
-		return nil, err
+	if err := e.parsePackage(); err != nil {
+		panic(err)
 	}
 
-	if err = epub.parseToc(); err != nil {
-		return nil, err
+	if err := e.parseToc(); err != nil {
+		panic(err)
 	}
 
-	epub.parseFlatNavPoint(epub.Toc.NavPoints)
+	e.parseFlatNavPoint(e.Toc.NavPoints)
 
-	epub.constructTextFiles()
+	e.constructTextFiles()
 
-	return &epub, nil
+	e.parseEpubToTexts()
+}
+
+func(e *Epub) parseEpubToTexts(){
+	arr := make([]Text, 0)
+
+	for _, points := range e.Toc.FlatNavPoints {
+		if file, ok := e.FileMap[points.Content.Src]; ok {
+			r, err := file.Open()
+			if err != nil {
+				panic(err)
+			}
+
+			doc, err := html.Parse(r)
+			if err != nil {
+				panic(err)
+			}
+			extract_and_add(doc, &arr)
+		}
+	}
+
+	e.Texts = arr
 }
 
 func (e *Epub) parseContainer() error {
@@ -122,38 +150,24 @@ func (e *Epub) parseFlatNavPoint(navPoints []NavPoint) {
 	}
 }
 
-func cli_show(file *zip.File) {
-	r, _ := file.Open()
-	z := html.NewTokenizer(r)
-	for {
-		token_type := z.Next()
-		if token_type == html.ErrorToken {
-			break
-		}
-
-		if token_type == html.TextToken {
-			text := z.Token().Data
-			text = strings.TrimSpace(text)
-			if text != "" {
-				fmt.Println(text)
+func extract_and_add(node *html.Node, arr *[]Text) {
+	if node.Type == html.TextNode && node.Parent != nil {
+		text := strings.TrimSpace(node.Data)
+		if text != "" {
+			var textType string
+			switch node.Parent.Data {
+			case "h1", "h2", "h3", "h4", "h5", "h6", "title":
+				textType = "h1"
+			case "p", "div", "span", "a", "li", "td":
+				textType = "p"
+			default:
+				textType = "anawn"
 			}
+			*arr = append(*arr, Text{Text: text, Type: textType})
 		}
 	}
-}
 
-func (e *Epub) HtmlLineByLine() {
-	for _, points := range e.Toc.FlatNavPoints[3:5] {
-		file, ok := e.FileMap[points.Content.Src]
-		if !ok {
-			fmt.Println("hurray not found")
-			fmt.Println("this file not found", points.NavLabel)
-		} else {
-			fmt.Println("---------------")
-			fmt.Println(points.NavLabel)
-			fmt.Println(points.Content.Src)
-			fmt.Println("---------------")
-			cli_show(file)
-		}
-
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		extract_and_add(c, arr)
 	}
 }

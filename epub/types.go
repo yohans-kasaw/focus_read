@@ -3,10 +3,12 @@ package epub
 import "archive/zip"
 
 type Epub struct {
+	file_path string
 	ZipReader *zip.ReadCloser
 	FileMap   map[string]*zip.File
 	TextFiles []string
 
+	Texts []Text
 	Container Container
 	Package   Package
 	Toc       Toc
@@ -50,4 +52,9 @@ type NavPoint struct {
 		Src string `xml:"src,attr"`
 	} `xml:"content"`
 	NavPoints []NavPoint `xml:"navPoint"`
+}
+
+type Text struct{
+	Text string
+	Type string
 }

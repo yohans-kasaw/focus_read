@@ -1,7 +1,20 @@
 package main
 
-import explearn "focusRead/exp_learn"
+import (
+	"fmt"
+	"focusRead/epub"
+)
 
 func main() {
-	explearn.TestStatusCli()
+
+	file_path := "./test_file/test_v2.epub"
+	e, err := epub.New(file_path)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(len(e.Texts))
+	// for _, v := range arr {
+	// 	fmt.Println(v)
+	// }
 }
