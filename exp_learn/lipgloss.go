@@ -11,11 +11,6 @@ import (
 
 func TestLipGloss() {
 
-	style := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#b4b7d6")).
-		Width(100).
-		AlignHorizontal(lipgloss.Center)
-	 
+	style := lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 	fmt.Println(style.Render("hello world"))
 }

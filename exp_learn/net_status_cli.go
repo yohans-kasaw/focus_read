@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 const url = "https://charm.sh/"
@@ -25,11 +26,13 @@ var spinners = []spinner.Spinner{
 }
 
 type smodel struct {
-	textInput textinput.Model
-	status    int
-	err       error
-	index     int
-	spinner   spinner.Model
+	textInput   textinput.Model
+	style       lipgloss.Style
+	color_index int
+	status      int
+	err         error
+	index       int
+	spinner     spinner.Model
 }
 
 type StatusCodeMsg int
@@ -77,6 +80,16 @@ func (m smodel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.resetSpinner()
 			return m, nil
 		}
+
+		if msg.Type == tea.KeyUp {
+			m.color_index = (m.color_index + 1) % 256
+			m.style = m.style.Foreground(lipgloss.Color(fmt.Sprintf("%d", m.color_index)))
+			return m, nil
+		}
+	case tea.WindowSizeMsg:
+		m.style = m.style.Width(msg.Width)
+		m.style = m.style.Height(msg.Height/2)
+		return m, nil
 	case spinner.TickMsg:
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(m.spinner.Tick())
@@ -104,6 +117,7 @@ func (m smodel) View() string {
 	}
 
 	s += fmt.Sprintf("\n\n=n %s", m.textInput.Value())
+	s += fmt.Sprintf("\n\n %s %d", m.style.Render("color Testing"), m.color_index)
 
 	return s
 }
@@ -121,8 +135,13 @@ func TestStatusCli() {
 	ti.Width = 40
 
 	if _, err := tea.NewProgram(smodel{
-		spinner:   s,
-		textInput: ti,
+		spinner:     s,
+		textInput:   ti,
+		color_index: 1,
+		style: lipgloss.NewStyle().
+			Foreground(lipgloss.Color("1")).
+			AlignHorizontal(lipgloss.Center).
+			AlignVertical(lipgloss.Center),
 	}).Run(); err != nil {
 		panic(err)
 	}
