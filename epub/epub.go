@@ -157,7 +157,8 @@ func (e *Epub) parsePackage() error {
 
 	for _, item := range e.Package.Manifest.Items {
 		if item.Media_type == "application/x-dtbncx+xml" || item.Properties == "nav" {
-			e.Package.NavigationFile = item.Href
+			nav_path := path.Join(path.Dir(e.Container.Rootfile.Path), item.Href)
+			e.Package.NavigationFile = nav_path
 			return nil
 		}
 	}
@@ -203,14 +204,14 @@ func (e *Epub) parseFlatNavPoint(navPoints []NavPoint) {
 
 		found := false
 		for _, existingNv := range e.Toc.FlatNavPoints {
-			if trimAfterHash(existingNv.Content.Src) == trimAfterHash(nv.Content.Src) {
+			if e.getFullPath(existingNv.Content.Src) == e.getFullPath(nv.Content.Src) {
 				found = true
 				break
 			}
 		}
 
 		if !found {
-			nv.Content.Src = trimAfterHash(nv.Content.Src)
+			nv.Content.Src = e.getFullPath(nv.Content.Src)
 			e.Toc.FlatNavPoints = append(e.Toc.FlatNavPoints, nv)
 		}
 
@@ -242,7 +243,8 @@ func extract_and_add(node *html.Node, arr *[]Text) {
 	}
 }
 
-func trimAfterHash(s string) string {
-	before, _, _ := strings.Cut(s, "#")
-	return before
+func (e *Epub) getFullPath(s string) string {
+	file_path, _, _ := strings.Cut(s, "#")
+	full_path := path.Join(path.Dir(e.Container.Rootfile.Path), file_path)
+	return  full_path
 }

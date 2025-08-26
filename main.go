@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	file_path := "./test_file/test_n_3.epub"
+	file_path := "./test_file/test_n_4.epub"
 	e, err := epub.New(file_path)
 	if err != nil {
 		panic(err)
