@@ -19,7 +19,7 @@ type model struct {
 
 func (m model) View() string {
 	s := fmt.Sprintln(m.style.Render(m.texts[m.index].Text))
-	s += fmt.Sprintln("\n", m.index)
+	s += fmt.Sprintln("\n", m.index, "/", len(m.texts))
 	return s
 }
 
