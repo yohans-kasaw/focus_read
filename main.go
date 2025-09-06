@@ -1,26 +1,52 @@
 package main
 
 import (
-	"encoding/json"
-	"focusRead/cli"
-	"focusRead/epub"
 	"os"
+	"fmt"
+	"log"
+	"strings"
+	"path/filepath"
+	"encoding/json"
+	"focusRead/epub"
 )
 
 func main() {
+	bookPath := "./test_file/test_n_4.epub"
+	e, err := epub.New(bookPath)
 
-	file_path := "./test_file/test_n_4.epub"
-	e, err := epub.New(file_path)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Faled to creat epub reader %v", err)
 	}
 
-	cli.Run(e.Texts)
-	saveTofile_for_debug(e.Texts)
+	fileName := strings.TrimSuffix(
+		filepath.Base(bookPath),
+		filepath.Ext(bookPath),
+	)
+
+	if err := debugWriteTexts(e.Texts, fileName); err != nil {
+		log.Fatalf("filed to write Texts to debug cache %v\n", err)
+	}
 }
 
-func saveTofile_for_debug(texts []epub.Text){
-	file, _ := os.Create("./cache/testing_file.txt")
-	jsonData, _ := json.MarshalIndent(texts, "", "  ")
-	file.Write(jsonData)
+func debugWriteTexts(texts []epub.Text, fileName string) error {
+	if err := os.MkdirAll("./cache/", 0755); err != nil {
+		return fmt.Errorf("error creating directory: %w\n", err)
+	}
+
+	file, err := os.Create("./cache/" + fileName + ".txt")
+	if err != nil {
+		return fmt.Errorf("error creating file: %w\n", err)
+	}
+	defer file.Close()
+
+	jsonData, err := json.MarshalIndent(texts, "", "  ")
+	if err != nil {
+		return fmt.Errorf("Error marsialing : %w\n", err)
+	}
+
+	if _, err := file.Write(jsonData); err != nil {
+		return fmt.Errorf("Error writing file: %w\n", err)
+	}
+
+	return nil
 }
