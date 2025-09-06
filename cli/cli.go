@@ -3,30 +3,14 @@ package cli
 import (
 	"fmt"
 	"focusRead/epub"
-	"os"
-	"strconv"
-	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
-func Run(texts []epub.Text) {
-	indexPath := "./cache/index_cache.bin"
-
-	savedIndex, err := readIndexFromFile(indexPath)
-	if err != nil {
-		fmt.Printf("Could not read saved index, starting from beginning: %v", err)
-		savedIndex = 0
-	}
-
-	if savedIndex >= len(texts) || savedIndex < 0 {
-		savedIndex = 0
-	}
-
+func Run(texts []epub.Text, start int) int {
 	p := tea.NewProgram(model{
 		texts: texts,
-		index: savedIndex,
+		index: start,
 		style: lipgloss.NewStyle().
 			Background(lipgloss.Color("#121212")).
 			AlignHorizontal(lipgloss.Center).
@@ -39,13 +23,10 @@ func Run(texts []epub.Text) {
 	}
 
 	if m, ok := finalModel.(model); ok {
-		err := writeIndexToFile(indexPath, m.index)
-		if err != nil {
-			fmt.Printf("Error saving final index: %v", err)
-		} else {
-			fmt.Println("Progress saved.")
-		}
+		return m.index
 	}
+
+	return 0
 }
 
 
@@ -92,33 +73,5 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
-}
-
-
-func readIndexFromFile(path string) (int, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return 0, nil
-		}
-		return 0, fmt.Errorf("failed to read index file: %w", err)
-	}
-
-	index, err := strconv.Atoi(strings.TrimSpace(string(data)))
-	if err != nil {
-		fmt.Printf("Warning: could not parse index from file, defaulting to 0: %v", err)
-		return 0, nil
-	}
-
-	return index, nil
-}
-
-func writeIndexToFile(path string, index int) error {
-	data := []byte(strconv.Itoa(index))
-	err := os.WriteFile(path, data, 0644)
-	if err != nil {
-		return fmt.Errorf("failed to write index file: %w", err)
-	}
 	return nil
 }
