@@ -12,11 +12,31 @@ import (
 )
 
 func main() {
-	bookPath := "./test_file/test_n_4.epub"
-	e, err := epub.New(bookPath)
+	if len(os.Args) < 2 {
+		fmt.Printf("usage: %s <path/to/book.epub>\n", filepath.Base(os.Args[0]))
+		os.Exit(1)
+	}
 
+	bookPath := os.Args[1]
+	fileInfo, err := os.Stat(bookPath)
 	if err != nil {
-		log.Fatalf("Faled to creat epub reader %v", err)
+		if os.IsNotExist(err) {
+			fmt.Printf("Error: The specified file was not found: %s\n", bookPath)
+		} else {
+			fmt.Printf("Error accessing file: %v\n", err)
+		}
+		os.Exit(1)
+	}
+
+	if fileInfo.IsDir() {
+		fmt.Printf("Error: The provided path is a directory. Please provide a path to an EPUB file.\n")
+		os.Exit(1)
+	}
+
+	e, err := epub.New(bookPath)
+	if err != nil {
+		fmt.Printf("Error creating EPUB reader: Failed to parse EPUB file. Details: %v\n", err)
+		os.Exit(1)
 	}
 
 	cli.Run(e.Texts)
@@ -27,7 +47,7 @@ func main() {
 	)
 
 	if err := debugWriteTexts(e.Texts, fileName); err != nil {
-		log.Fatalf("filed to write Texts to debug cache %v\n", err)
+		log.Printf("Warning: Failed to write texts to debug cache. You can ignore this in production. Details: %v\n", err)
 	}
 }
 

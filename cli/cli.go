@@ -11,6 +11,44 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+func Run(texts []epub.Text) {
+	indexPath := "./cache/index_cache.bin"
+
+	savedIndex, err := readIndexFromFile(indexPath)
+	if err != nil {
+		fmt.Printf("Could not read saved index, starting from beginning: %v", err)
+		savedIndex = 0
+	}
+
+	if savedIndex >= len(texts) || savedIndex < 0 {
+		savedIndex = 0
+	}
+
+	p := tea.NewProgram(model{
+		texts: texts,
+		index: savedIndex,
+		style: lipgloss.NewStyle().
+			Background(lipgloss.Color("#121212")).
+			AlignHorizontal(lipgloss.Center).
+			AlignVertical(lipgloss.Center),
+	})
+
+	finalModel, err := p.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	if m, ok := finalModel.(model); ok {
+		err := writeIndexToFile(indexPath, m.index)
+		if err != nil {
+			fmt.Printf("Error saving final index: %v", err)
+		} else {
+			fmt.Println("Progress saved.")
+		}
+	}
+}
+
+
 type model struct {
 	texts []epub.Text
 	index int
@@ -57,42 +95,6 @@ func (m model) Init() tea.Cmd {
 	return nil
 }
 
-func Run(texts []epub.Text) {
-	indexPath := "./cache/index_cache.bin"
-
-	savedIndex, err := readIndexFromFile(indexPath)
-	if err != nil {
-		fmt.Printf("Could not read saved index, starting from beginning: %v", err)
-		savedIndex = 0
-	}
-
-	if savedIndex >= len(texts) || savedIndex < 0 {
-		savedIndex = 0
-	}
-
-	p := tea.NewProgram(model{
-		texts: texts,
-		index: savedIndex,
-		style: lipgloss.NewStyle().
-			Background(lipgloss.Color("#121212")).
-			AlignHorizontal(lipgloss.Center).
-			AlignVertical(lipgloss.Center),
-	})
-
-	finalModel, err := p.Run()
-	if err != nil {
-		panic(err)
-	}
-
-	if m, ok := finalModel.(model); ok {
-		err := writeIndexToFile(indexPath, m.index)
-		if err != nil {
-			fmt.Printf("Error saving final index: %v", err)
-		} else {
-			fmt.Println("Progress saved.")
-		}
-	}
-}
 
 func readIndexFromFile(path string) (int, error) {
 	data, err := os.ReadFile(path)
