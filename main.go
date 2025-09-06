@@ -1,13 +1,14 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"log"
-	"strings"
-	"path/filepath"
 	"encoding/json"
+	"fmt"
+	"focusRead/cli"
 	"focusRead/epub"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -17,6 +18,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Faled to creat epub reader %v", err)
 	}
+
+	cli.Run(e.Texts)
 
 	fileName := strings.TrimSuffix(
 		filepath.Base(bookPath),
