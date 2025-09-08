@@ -58,12 +58,14 @@ func handleNormalMode(pm *ProgressStore) (string, []string, error) {
 	}
 
 	texts := make([]string, 0)
-	if filepath.Ext(path) == "epub" {
+	if filepath.Ext(path) == ".epub" {
 		e, err := epub.New(path)
 		if err != nil {
 			return "", nil, fmt.Errorf("failed to parse EPUB file: %w", err)
 		}
 
+		fmt.Println(e.Texts[10])
+		fmt.Println(e.Texts[10])
 		for i := range e.Texts {
 			texts = append(texts, e.Texts[i].Text)
 		}
