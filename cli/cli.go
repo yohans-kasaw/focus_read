@@ -2,12 +2,11 @@ package cli
 
 import (
 	"fmt"
-	"focusRead/epub"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
-func Run(texts []epub.Text, start int) int {
+func Run(texts []string, start int) int {
 	p := tea.NewProgram(model{
 		texts: texts,
 		index: start,
@@ -31,13 +30,13 @@ func Run(texts []epub.Text, start int) int {
 
 
 type model struct {
-	texts []epub.Text
+	texts []string
 	index int
 	style lipgloss.Style
 }
 
 func (m model) View() string {
-	s := fmt.Sprintln(m.style.Render(m.texts[m.index].Text))
+	s := fmt.Sprintln(m.style.Render(m.texts[m.index]))
 	s += fmt.Sprintln("\n", m.index, "/", len(m.texts))
 	return s
 }
