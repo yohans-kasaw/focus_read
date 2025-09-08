@@ -3,7 +3,7 @@ package epub
 import "archive/zip"
 
 type Epub struct {
-	file_path string
+	filePath string
 	ZipReader *zip.ReadCloser
 	FileMap   map[string]*zip.File
 	TextFiles []string
