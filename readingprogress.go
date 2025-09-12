@@ -17,13 +17,13 @@ type ProgressStore struct {
 	Index      int
 }
 
-func NewProgressManager() (*ProgressStore, error) {
+func NewProgressStore() (*ProgressStore, error) {
 	m := &ProgressStore{
 		Progresses: []Progress{},
 		Index:      0,
 	}
 
-	file, err := os.ReadFile(filepath.Join(cacheDir, historyFile))
+	file, err := os.ReadFile(filepath.Join(cacheDir, progressFile))
 	if err != nil && !os.IsNotExist(err) {
 		return nil, fmt.Errorf("Error: reading progress store %v\n", err)
 	}
@@ -35,6 +35,11 @@ func NewProgressManager() (*ProgressStore, error) {
 	}
 
 	return m, nil
+}
+
+func (m *ProgressStore) GetProgress(path string) *Progress{
+	m.SetCurrent(path)
+	return &m.Progresses[m.Index]
 }
 
 func (m *ProgressStore) SetCurrent(path string) {
@@ -59,7 +64,7 @@ func (m *ProgressStore) SaveProgress() error {
 		return fmt.Errorf("Error marshaling Progress Store %v\n", err)
 	}
 
-	err = os.WriteFile(filepath.Join(cacheDir, historyFile), data, 0644)
+	err = os.WriteFile(filepath.Join(cacheDir, progressFile), data, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write Progress Store to file: %w", err)
 	}
