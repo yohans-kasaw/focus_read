@@ -34,7 +34,10 @@ func handlePasteMode() (string, []string, error) {
 		return "", nil, fmt.Errorf("processing paste: %w", err)
 	}
 
-	texts := strings.Split(text, "\n")
+	texts := strings.Split(text, ". ")
+	for i := range texts {
+		texts[i] = strings.Replace(texts[i], "\n", " ", -1)
+	}
 	return path, texts, nil
 }
 
