@@ -36,7 +36,7 @@ func handlePasteMode() (string, []string, error) {
 
 	texts := strings.Split(text, ". ")
 	for i := range texts {
-		texts[i] = strings.Replace(texts[i], "\n", " ", -1)
+		texts[i] = regexp.MustCompile(`\s+`).ReplaceAllString(texts[i], " ")
 	}
 	return path, texts, nil
 }
