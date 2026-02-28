@@ -46,7 +46,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "right", " ":
-			if m.index < len(m.texts) {
+			if m.index < len(m.texts) - 1 {
 				m.index++
 			}
 			return m, nil
