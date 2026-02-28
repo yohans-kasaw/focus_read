@@ -34,11 +34,19 @@ func handlePasteMode() (string, []string, error) {
 		return "", nil, fmt.Errorf("processing paste: %w", err)
 	}
 
-	texts := strings.Split(text, ". ")
-	for i := range texts {
-		texts[i] = regexp.MustCompile(`\s+`).ReplaceAllString(texts[i], " ")
-	}
-	return path, texts, nil
+    text = regexp.MustCompile(`\s+`).ReplaceAllString(text, " ")
+
+    reSent := regexp.MustCompile(`([.!?]+["'”’]?)\s+`)
+    text = reSent.ReplaceAllString(text, "$1|")
+
+    var result []string
+    for _, s := range strings.Split(text, "|") {
+        if val := strings.TrimSpace(s); val != "" {
+            result = append(result, val)
+        }
+    }
+
+	return path, result, nil
 }
 
 func handleNormalMode(pm *ProgressStore) (string, []string, error) {
